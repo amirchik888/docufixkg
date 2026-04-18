@@ -1,0 +1,18 @@
+.main {
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+    padding: 80px;
+
+}
+.page {
+min-height: 100vh; /* КЛЮЧЕВОЕ */
+position: relative;
+
+background:
+radial-gradient(circle at 20% 30%, rgba(59,130,246,0.12), transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(22,163,74,0.12), transparent 40%);
+}

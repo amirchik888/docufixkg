@@ -1,0 +1,65 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.columns {
+    display: flex;
+    gap: 20px;
+}
+
+.block {
+    flex: 1;
+    padding: 16px;
+    border-radius: 12px;
+    background: #f9f9f9;
+}
+
+.red {
+    color: #dc2626;
+}
+
+.green {
+    color: #16a34a;
+}
+
+.issues {
+    background: #fff7ed;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.loading {
+    text-align: center;
+}
+.block {
+    flex: 1;
+    padding: 20px;
+    border-radius: 16px;
+
+    background: white;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+
+    transition: 0.3s;
+}
+
+.block:hover {
+    transform: translateY(-4px);
+}
+
+/* исходный */
+.red {
+    color: #dc2626;
+    background: #fef2f2;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* исправленный */
+.green {
+    color: #16a34a;
+    background: #f0fdf4;
+    padding: 10px;
+    border-radius: 8px;
+}

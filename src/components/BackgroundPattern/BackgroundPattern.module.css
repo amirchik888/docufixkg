@@ -1,0 +1,8 @@
+.pattern {
+    position: absolute;
+    inset: 0;
+    background-image: url("https://images.openai.com/static-rsc-4/JCfKnug9l9hXrEv-TVy_CDIX36Gi2aIjHm6rzkzR10e7EXLmxbkTYAn_6REX8PDD0IkwRs3vjBLOfgUAelLNEn3KDbszRI8nq6txL_rfNg2OXVOkL1-8jsdYeBse8EVUN_I7fI_Rugeb60ZoeACknq7hVkWr7fO3XbWYNUB5D8WOoFHFQEYDPMv-shAIEKv_?purpose=fullsize");
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+}

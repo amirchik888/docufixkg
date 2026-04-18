@@ -1,0 +1,22 @@
+:root {
+    --green-primary: #16A34A;
+    --green-light: #22C55E;
+
+    --blue-primary: #3B82F6;
+    --blue-light: #06B6D4;
+
+    --bg-main: #FFFFFF;
+    --bg-soft: #F8FAFC;
+
+    --text-main: #0F172A;
+    --text-secondary: #64748B;
+
+    --radius: 12px;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    background: var(--bg-soft);
+    color: var(--text-main);
+}
