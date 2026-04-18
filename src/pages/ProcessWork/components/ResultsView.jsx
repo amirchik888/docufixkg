@@ -10,24 +10,45 @@ export default function ResultsView({ result, loading }) {
     return (
         <div className={styles.container}>
             <div className={styles.columns}>
+
+                {/* ЛЕВАЯ СТОРОНА */}
                 <div className={styles.block}>
                     <h3>Исходный</h3>
-                    <p className={styles.red}>{result.original}</p>
+
+                    {result.type === "text" && <p>{result.original}</p>}
+
+                    {result.type === "pdf" && (
+                        <iframe
+                            src={URL.createObjectURL(result.originalFile)}
+                            className={styles.viewer}
+                        />
+                    )}
+
+                    {result.type === "docx" && (
+                        <p>DOCX файл загружен</p>
+                    )}
                 </div>
 
+                {/* ПРАВАЯ СТОРОНА */}
                 <div className={styles.block}>
                     <h3>Исправленный</h3>
-                    <p className={styles.green}>{result.fixed}</p>
-                </div>
-            </div>
 
-            <div className={styles.issues}>
-                <h4>Проблемы:</h4>
-                <ul>
-                    {result.issues?.map((i, idx) => (
-                        <li key={idx}>⚠️ {i}</li>
-                    ))}
-                </ul>
+                    {result.type === "text" && <p>{result.fixed}</p>}
+
+                    {result.type === "pdf" && (
+                        <iframe
+                            src={result.fixedFileUrl}
+                            className={styles.viewer}
+                        />
+                    )}
+
+                    {result.type === "docx" && (
+                        <a href={result.fixedFileUrl} download>
+                            📥 Скачать исправленный файл
+                        </a>
+                    )}
+                </div>
+
             </div>
         </div>
     );

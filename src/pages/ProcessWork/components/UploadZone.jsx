@@ -10,10 +10,15 @@ export default function UploadZone({ file, setFile }) {
             {!file ? (
                 <>
                     <p className={styles.title}>Загрузите документ</p>
-                    <input type="file" onChange={handleFile} />
+
+                    {/* кастомная кнопка */}
+                    <label className={styles.uploadBtn}>
+                        📎 Выберите файл
+                        <input type="file" onChange={handleFile} hidden />
+                    </label>
                 </>
             ) : (
-                <p className={styles.fileName}>{file.name}</p>
+                <p className={styles.fileName}>📄 {file.name}</p>
             )}
         </div>
     );

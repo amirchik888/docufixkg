@@ -8,6 +8,7 @@ import ActionsFooter from "./components/ActionsFooter";
 import { uploadFile } from "/src/api/api.js";
 
 export default function ProcessWork() {
+    const [textInput, setTextInput] = useState(""); // если есть ввод текста
     const [file, setFile] = useState(null);
     const [selectedTools, setSelectedTools] = useState([]);
     const [result, setResult] = useState(null);
@@ -23,23 +24,56 @@ export default function ProcessWork() {
     };
 
     const handleAnalyze = async () => {
-        if (!file || selectedTools.length === 0) return;
+        if (!file && !textInput) return;
 
-        try {
-            setLoading(true);
+        setLoading(true);
 
-            const type = file.name.endsWith(".pdf") ? "pdf" : "word";
+        let url = "";
+        const formData = new FormData();
 
-            const res = await uploadFile(file, type, selectedTools);
+        // 📌 если файл
+        if (file) {
+            formData.append("file", file);
 
-            setResult(res);
-
-        } catch (e) {
-            console.error(e);
-            alert("Ошибка при обработке файла");
-        } finally {
-            setLoading(false);
+            if (file.type.includes("pdf")) {
+                url = "http://localhost:8000/api/pdf/";
+            } else {
+                url = "http://localhost:8000/api/word/";
+            }
+        } else {
+            // 📌 если текст
+            url = "http://localhost:8000/api/text/";
+            formData.append("text", textInput);
         }
+
+        const response = await fetch(url, {
+            method: "POST",
+            body: formData,
+        });
+
+        // 📌 если JSON
+        if (url.includes("text")) {
+            const data = await response.json();
+
+            setResult({
+                type: "text",
+                original: data.original,
+                fixed: data.fixed,
+            });
+
+        } else {
+            // 📌 если файл
+            const blob = await response.blob();
+            const fileUrl = URL.createObjectURL(blob);
+
+            setResult({
+                type: file.type.includes("pdf") ? "pdf" : "docx",
+                originalFile: file,
+                fixedFileUrl: fileUrl,
+            });
+        }
+
+        setLoading(false);
     };
 
     return (
