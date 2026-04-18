@@ -18,10 +18,20 @@ export default function ResultsView({ result, loading }) {
                     {result.type === "text" && <p>{result.original}</p>}
 
                     {result.type === "pdf" && (
-                        <iframe
-                            src={URL.createObjectURL(result.originalFile)}
-                            className={styles.viewer}
-                        />
+                        <>
+                            <iframe
+                                src={`${result.fixedFileUrl}#zoom=page-width`}
+                                className={styles.viewer}
+                            />
+
+                            <a
+                                href={result.fixedFileUrl}
+                                download="fixed.pdf"
+                                className={styles.downloadBtn}
+                            >
+                                 Скачать PDF
+                            </a>
+                        </>
                     )}
 
                     {result.type === "docx" && (
@@ -37,7 +47,7 @@ export default function ResultsView({ result, loading }) {
 
                     {result.type === "pdf" && (
                         <iframe
-                            src={result.fixedFileUrl}
+                            src={`${result.fixedFileUrl}#zoom=page-width`}
                             className={styles.viewer}
                         />
                     )}

@@ -1,5 +1,5 @@
 import styles from "./ProcessWork.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import UploadZone from "./components/UploadZone";
 import ToolsPanel from "./components/ToolsPanel";
@@ -13,6 +13,7 @@ export default function ProcessWork() {
     const [selectedTools, setSelectedTools] = useState([]);
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
+
 
     const toggleTool = (tool) => {
         setSelectedTools((prev) => {
@@ -88,6 +89,13 @@ export default function ProcessWork() {
             setLoading(false);
         }
     };
+    useEffect(() => {
+        return () => {
+            if (result?.fixedFileUrl) {
+                URL.revokeObjectURL(result.fixedFileUrl);
+            }
+        };
+    }, [result]);
 
     return (
         <div className={styles.container}>
