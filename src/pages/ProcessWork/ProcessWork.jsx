@@ -5,10 +5,10 @@ import UploadZone from "./components/UploadZone";
 import ToolsPanel from "./components/ToolsPanel";
 import ResultsView from "./components/ResultsView";
 import ActionsFooter from "./components/ActionsFooter";
-import { uploadFile } from "/src/api/api.js";
+
 
 export default function ProcessWork() {
-    const [textInput, setTextInput] = useState(""); // если есть ввод текста
+    const [textInput] = useState(""); // если есть ввод текста
     const [file, setFile] = useState(null);
     const [selectedTools, setSelectedTools] = useState([]);
     const [result, setResult] = useState(null);
@@ -28,52 +28,65 @@ export default function ProcessWork() {
 
         setLoading(true);
 
-        let url = "";
-        const formData = new FormData();
+        try {
+            let url = "";
+            const formData = new FormData();
 
-        // 📌 если файл
-        if (file) {
-            formData.append("file", file);
+            if (file) {
+                formData.append("file", file);
 
-            if (file.type.includes("pdf")) {
-                url = "http://localhost:8000/api/pdf/";
+                if (file.type.includes("pdf")) {
+                    url = "http://localhost:8000/api/pdf/";
+                } else {
+                    url = "http://localhost:8000/api/word/";
+                }
             } else {
-                url = "http://localhost:8000/api/word/";
+                url = "http://localhost:8000/api/text/";
+                formData.append("text", textInput);
             }
-        } else {
-            // 📌 если текст
-            url = "http://localhost:8000/api/text/";
-            formData.append("text", textInput);
-        }
 
-        const response = await fetch(url, {
-            method: "POST",
-            body: formData,
-        });
-
-        // 📌 если JSON
-        if (url.includes("text")) {
-            const data = await response.json();
-
-            setResult({
-                type: "text",
-                original: data.original,
-                fixed: data.fixed,
+            const response = await fetch(url, {
+                method: "POST",
+                body: formData,
             });
 
-        } else {
-            // 📌 если файл
-            const blob = await response.blob();
-            const fileUrl = URL.createObjectURL(blob);
+            // 🔥 ВАЖНО: проверка ответа
+            if (!response.ok) {
+                throw new Error("Ошибка сервера");
+            }
 
-            setResult({
-                type: file.type.includes("pdf") ? "pdf" : "docx",
-                originalFile: file,
-                fixedFileUrl: fileUrl,
-            });
+            const contentType = response.headers.get("content-type");
+
+            // 👉 JSON
+            if (contentType && contentType.includes("application/json")) {
+                const data = await response.json();
+
+                setResult({
+                    type: "text",
+                    original: data.original,
+                    fixed: data.fixed,
+                });
+
+            } else {
+                // 👉 файл
+                const blob = await response.blob();
+
+                const fileUrl = URL.createObjectURL(blob);
+
+                setResult({
+                    type: file.type.includes("pdf") ? "pdf" : "docx",
+                    originalFile: file,
+                    fixedFileUrl: fileUrl,
+                });
+            }
+
+        } catch (error) {
+            console.error("Ошибка:", error);
+            alert("Ошибка при анализе");
+        } finally {
+            // 🔥 ГАРАНТИЯ что лоадер выключится
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return (
