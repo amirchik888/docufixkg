@@ -24,7 +24,7 @@ export default function ResultsView({ result, loading }) {
             <div className={styles.issues}>
                 <h4>Проблемы:</h4>
                 <ul>
-                    {result.issues.map((i, idx) => (
+                    {result.issues?.map((i, idx) => (
                         <li key={idx}>⚠️ {i}</li>
                     ))}
                 </ul>

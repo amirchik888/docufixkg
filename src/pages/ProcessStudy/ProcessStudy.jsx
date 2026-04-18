@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { uploadFile, sendText } from "../api/api";
+import { uploadFile, } from "/src/api/api";
+
+async function sendText() {
+    
+}
 
 export default function ProcessStudy() {
     const [file, setFile] = useState(null);
@@ -32,7 +36,7 @@ export default function ProcessStudy() {
         }
     };
 
-    return (
+    return ( 
         <div style={{ padding: "40px" }}>
             <h1>Обработка документа</h1>
 

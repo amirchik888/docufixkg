@@ -1,97 +1,62 @@
+import styles from "./ProcessWork.module.css";
 import { useState } from "react";
-import { uploadFile, sendText } from "../../api/api";
-import { useParams } from "react-router-dom";
+
+import UploadZone from "./components/UploadZone";
+import ToolsPanel from "./components/ToolsPanel";
+import ResultsView from "./components/ResultsView";
+import ActionsFooter from "./components/ActionsFooter";
+import { uploadFile } from "/src/api/api.js";
 
 export default function ProcessWork() {
-    const { type } = useParams(); // resume / contract / application
-
     const [file, setFile] = useState(null);
-    const [text, setText] = useState("");
-    const [result, setResult] = useState("");
+    const [selectedTools, setSelectedTools] = useState([]);
+    const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // 📄 загрузка файла
-    const handleFileUpload = async () => {
-        if (!file) return alert("Выберите файл");
-
-        try {
-            setLoading(true);
-
-            const fileType = file.name.endsWith(".pdf") ? "pdf" : "word";
-
-            const res = await uploadFile(file, fileType);
-
-            setResult(JSON.stringify(res, null, 2));
-        } catch (e) {
-            console.error(e);
-            alert("Ошибка загрузки");
-        } finally {
-            setLoading(false);
-        }
+    const toggleTool = (tool) => {
+        setSelectedTools((prev) => {
+            if (prev.includes(tool)) {
+                return prev.filter((t) => t !== tool);
+            }
+            return [...prev, tool];
+        });
     };
 
-    // 📝 отправка текста
-    const handleText = async () => {
-        if (!text.trim()) return;
+    const handleAnalyze = async () => {
+        if (!file || selectedTools.length === 0) return;
 
         try {
             setLoading(true);
 
-            const res = await sendText(text);
+            const type = file.name.endsWith(".pdf") ? "pdf" : "word";
 
-            setResult(JSON.stringify(res, null, 2));
+            const res = await uploadFile(file, type, selectedTools);
+
+            setResult(res);
+
         } catch (e) {
             console.error(e);
-            alert("Ошибка обработки текста");
+            alert("Ошибка при обработке файла");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div style={{ padding: "40px" }}>
-            <h1>Обработка рабочих документов</h1>
+        <div className={styles.container}>
+            <div className={styles.page}>
+                <UploadZone file={file} setFile={setFile} />
 
-            <p>Тип документа: <b>{type}</b></p>
+                <ToolsPanel
+                    selectedTools={selectedTools}
+                    toggleTool={toggleTool}
+                    onAnalyze={handleAnalyze}
+                />
 
-            {/* FILE */}
-            <input
-                type="file"
-                onChange={(e) => setFile(e.target.files[0])}
-            />
+                <ResultsView result={result} loading={loading} />
 
-            <button onClick={handleFileUpload} disabled={loading}>
-                {loading ? "Загрузка..." : "Отправить файл"}
-            </button>
-
-            <hr />
-
-            {/* TEXT */}
-            <textarea
-                placeholder="Вставьте текст документа"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                style={{ width: "100%", height: "120px" }}
-            />
-
-            <button onClick={handleText} disabled={loading}>
-                {loading ? "Обработка..." : "Отправить текст"}
-            </button>
-
-            <hr />
-
-            {/* RESULT */}
-            <h3>Результат:</h3>
-            <pre
-                style={{
-                    background: "#f5f5f5",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    overflowX: "auto"
-                }}
-            >
-        {result}
-      </pre>
+                {result && <ActionsFooter />}
+            </div>
         </div>
     );
 }
