@@ -20,13 +20,13 @@ export default function ResultsView({ result, loading }) {
                     {result.type === "pdf" && (
                         <>
                             <iframe
-                                src={`${result.fixedFileUrl}#zoom=page-width`}
+                                src={`${result.originalFileUrl}#zoom=page-width`}
                                 className={styles.viewer}
                             />
 
                             <a
-                                href={result.fixedFileUrl}
-                                download="fixed.pdf"
+                                href={result.originalFileUrl}
+                                download="original.pdf"
                                 className={styles.downloadBtn}
                             >
                                  Скачать PDF

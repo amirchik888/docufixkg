@@ -6,22 +6,19 @@ import ToolsPanel from "./components/ToolsPanel";
 import ResultsView from "./components/ResultsView";
 import ActionsFooter from "./components/ActionsFooter";
 
-
 export default function ProcessWork() {
-    const [textInput] = useState(""); // если есть ввод текста
+    const [textInput] = useState(""); // пока не используешь — ок
     const [file, setFile] = useState(null);
     const [selectedTools, setSelectedTools] = useState([]);
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
 
-
     const toggleTool = (tool) => {
-        setSelectedTools((prev) => {
-            if (prev.includes(tool)) {
-                return prev.filter((t) => t !== tool);
-            }
-            return [...prev, tool];
-        });
+        setSelectedTools((prev) =>
+            prev.includes(tool)
+                ? prev.filter((t) => t !== tool)
+                : [...prev, tool]
+        );
     };
 
     const handleAnalyze = async () => {
@@ -31,53 +28,71 @@ export default function ProcessWork() {
 
         try {
             let url = "";
-            const formData = new FormData();
+            let response;
 
+            // 📄 ФАЙЛ
             if (file) {
+                const formData = new FormData();
                 formData.append("file", file);
 
-                if (file.type.includes("pdf")) {
-                    url = "http://localhost:8000/api/pdf/";
-                } else {
-                    url = "http://localhost:8000/api/word/";
-                }
+                url = file.type.includes("pdf")
+                    ? "http://127.0.0.1:8000/api/pdf/"
+                    : "http://127.0.0.1:8000/api/word/";
+
+                response = await fetch(url, {
+                    method: "POST",
+                    body: formData,
+                });
+
             } else {
-                url = "http://localhost:8000/api/text/";
-                formData.append("text", textInput);
+                // 📝 TEXT (JSON!)
+                url = "http://127.0.0.1:8000/api/text/";
+
+                response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ text: textInput }),
+                });
             }
 
-            const response = await fetch(url, {
-                method: "POST",
-                body: formData,
-            });
-
-            // 🔥 ВАЖНО: проверка ответа
             if (!response.ok) {
                 throw new Error("Ошибка сервера");
             }
 
             const contentType = response.headers.get("content-type");
 
-            // 👉 JSON
+            // ✅ JSON ответ (текст)
             if (contentType && contentType.includes("application/json")) {
                 const data = await response.json();
 
                 setResult({
                     type: "text",
-                    original: data.original,
-                    fixed: data.fixed,
+                    original: data.original || data.text || "",
+                    fixed: data.fixed || data.corrected || "",
+                    issues: data.issues || [],
                 });
 
             } else {
-                // 👉 файл
+                // ✅ FILE ответ (pdf/docx)
                 const blob = await response.blob();
 
-                const fileUrl = URL.createObjectURL(blob);
+                const fixedFileUrl = URL.createObjectURL(blob);
+                const originalFileUrl = file
+                    ? URL.createObjectURL(file)
+                    : null;
 
                 setResult({
-                    type: file.type.includes("pdf") ? "pdf" : "docx",
-                    originalFile: file,
-                    fixedFileUrl: fileUrl,
+                    type: file.name.endsWith(".pdf")
+                        ? "pdf"
+                        : file.name.endsWith(".docx")
+                            ? "docx"
+                            : "file",
+
+                    originalFileUrl,
+                    fixedFileUrl,
+                    issues: [],
                 });
             }
 
@@ -85,14 +100,18 @@ export default function ProcessWork() {
             console.error("Ошибка:", error);
             alert("Ошибка при анализе");
         } finally {
-            // 🔥 ГАРАНТИЯ что лоадер выключится
             setLoading(false);
         }
     };
+
+    // 🧹 очистка blob URL (важно)
     useEffect(() => {
         return () => {
             if (result?.fixedFileUrl) {
                 URL.revokeObjectURL(result.fixedFileUrl);
+            }
+            if (result?.originalFileUrl) {
+                URL.revokeObjectURL(result.originalFileUrl);
             }
         };
     }, [result]);
