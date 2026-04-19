@@ -21,5 +21,6 @@ export default function UploadZone({ file, setFile }) {
                 <p className={styles.fileName}>📄 {file.name}</p>
             )}
         </div>
+
     );
 }

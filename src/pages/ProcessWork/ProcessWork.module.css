@@ -14,13 +14,13 @@
 
     background-image: url("https://images.openai.com/static-rsc-4/JCfKnug9l9hXrEv-TVy_CDIX36Gi2aIjHm6rzkzR10e7EXLmxbkTYAn_6REX8PDD0IkwRs3vjBLOfgUAelLNEn3KDbszRI8nq6txL_rfNg2OXVOkL1-8jsdYeBse8EVUN_I7fI_Rugeb60ZoeACknq7hVkWr7fO3XbWYNUB5D8WOoFHFQEYDPMv-shAIEKv_?purpose=fullsize");
     background-repeat: repeat;
-    background-size: 420px;
+    background-size: 1500px;
 
-    opacity: 0.06;
+    opacity: 0.05;
     pointer-events: none;
 }
 .container {
-    max-width: 1100px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
     display: flex;
@@ -30,7 +30,7 @@
 
 }
 .container {
-    max-width: 1100px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
 
@@ -44,4 +44,11 @@
 
 * {
     transition: all 0.2s ease;
+}
+.page {
+
+
+    background:
+            radial-gradient(circle at 20% 30%, rgba(59,130,246,0.12), transparent 40%),
+            radial-gradient(circle at 80% 70%, rgba(22,163,74,0.12), transparent 40%);
 }
